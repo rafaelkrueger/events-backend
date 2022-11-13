@@ -191,7 +191,7 @@ app.patch("/set-ingresso", async (req, res) => {
       estado,
       ingresso,
     } = req.body;
-
+    console.log(ingresso);
     const result = await cloudinary.uploader.upload(image, {
       folder: "samples",
       resource_type: "auto",
@@ -229,32 +229,16 @@ app.patch("/set-ingresso", async (req, res) => {
 });
 
 app.patch("/update-evento", (req, res) => {
-  const {
-    empresa,
-    _id,
-    name,
-    image,
-    description,
-    ingresso,
-    adress,
-    data,
-    hour,
-  } = req.body;
-  console.log(req.body);
+  const { _id, description, ingresso, data, hour } = req.body;
+
   Companie.updateOne(
-    { _id: empresa },
+    { "events._id": _id },
     {
       $set: {
-        events: {
-          _id: _id,
-          image: image,
-          name: name,
-          description: description,
-          data: data,
-          hour: hour,
-          ingresso: ingresso,
-          adress: adress,
-        },
+        "events.$.description": description,
+        "events.$.data": data,
+        "events.$.hour": hour,
+        "events.$.ingresso": ingresso,
       },
     }
   )
