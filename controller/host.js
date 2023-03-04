@@ -1,5 +1,8 @@
 const Companie = require("../models/Companie");
 const cloudinary = require("cloudinary").v2;
+const axios = require("axios");
+const apiKey = "vWWY8QAGe1r10wbBIvE86vFN9GS5tErF";
+const urlApi = `http://www.mapquestapi.com/geocoding/v1/address?key=${apiKey}`;
 
 const registerCompany = async (req, res) => {
   const { logo, name, empresa, user, email, password, cellphone, cpf, url } =
@@ -75,11 +78,25 @@ const setIngresso = async (req, res) => {
       estado,
       ingresso,
     } = req.body;
-    console.log(ingresso);
     const result = await cloudinary.uploader.upload(image, {
       folder: "samples",
       resource_type: "auto",
     });
+    const getLocation = {
+      location: `${rua}, ${bairro}, ${cidade}, ${estado}`,
+      options: {
+        thumbMaps: false,
+      },
+    };
+
+    const location = await axios
+      .post(urlApi, getLocation)
+      .then((response) => {
+        console.log(response.data.results[0].locations[0].latLng);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
 
     Companie.updateOne(
       { _id: empresa },
@@ -98,8 +115,7 @@ const setIngresso = async (req, res) => {
               rua: rua,
               cidade: cidade,
               estado: estado,
-              latitude: "",
-              longitude: "",
+              location: location,
             },
           },
         },
