@@ -22,7 +22,10 @@ const CompanieSchema = new Schema({
       adress: Object,
       ingresso: Array,
       costumers: Array,
-      location: Object,
+      location: {
+        latitude: String,
+        longitude: String,
+      },
     },
   ],
   money: {

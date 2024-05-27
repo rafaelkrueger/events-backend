@@ -77,27 +77,15 @@ const setIngresso = async (req, res) => {
       cidade,
       estado,
       ingresso,
+      latitude,
+      longitude,
     } = req.body;
     const result = await cloudinary.uploader.upload(image, {
       folder: "samples",
       resource_type: "auto",
     });
-    const getLocation = {
-      location: `${rua}, ${bairro}, ${cidade}, ${estado}`,
-      options: {
-        thumbMaps: false,
-      },
-    };
-
-    const location = await axios
-      .post(urlApi, getLocation)
-      .then((response) => {
-        console.log(response.data.results[0].locations[0].latLng);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-
+    console.log(latitude);
+    console.log(longitude);
     Companie.updateOne(
       { _id: empresa },
       {
@@ -115,7 +103,10 @@ const setIngresso = async (req, res) => {
               rua: rua,
               cidade: cidade,
               estado: estado,
-              location: location,
+              location: {
+                latitude: latitude,
+                longitude: longitude,
+              },
             },
           },
         },
